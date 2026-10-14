@@ -1,0 +1,73 @@
+= Exercise 1: Vulnerability dashboard & Scanner V4
+:navtitle: Exercise 1: Vulnerability dashboard & Scanner V4
+
+Estimated time: 15 minutes.
+
+RHACS continuously scans every image running in your clusters.
+The vulnerability dashboard aggregates those results into a single view — top risky images, most common CVEs, and a fixable-versus-unfixable breakdown.
+
+Under the hood, **Scanner V4** splits the work into two stages:
+
+* **Indexer** — generates a Software Bill of Materials (SBOM) by unpacking each image layer and cataloguing installed packages (RPM, APK, dpkg) and language-level dependencies (Java JARs, Go modules, Python wheels, Node packages).
+* **Matcher** — correlates that SBOM against vulnerability feeds (NVD, Red Hat OVAL/RHSA, Alpine SecDB, Debian Security Tracker) to produce the final CVE list.
+
+This architecture means base OS vulnerabilities (RHEL, Alpine) and application-level vulnerabilities (Quarkus, Spring, npm) are evaluated through different feeds, so coverage and timing can differ.
+
+== Task 1.1: Explore the vulnerability dashboard
+
+. In the RHACS Console, navigate to *Vulnerability Management* > *Dashboard*.
+. Review the four summary widgets at the top:
+** *Top Risky Deployments by CVE Count and CVSS Score*
+** *Recently Detected Vulnerabilities*
+** *Most Common Vulnerabilities*
+** *Deployments with Most Severe Policy Violations*
+. Click into the *Top Risky Deployments* widget and note which deployment ranks highest.
+
+== Task 1.2: Drill into an image
+
+. From the dashboard, click *Images* in the left sidebar (under *Vulnerability Management*).
+. Select an image that shows a high CVE count (look for images based on older base layers).
+. On the image detail page, review the CVE table:
+** *Fixable* column — is a patched package version available?
+** *CVSS Score* — severity of each CVE.
+** *Component* — which package introduced the vulnerability.
+** *Component Source* — was it detected from the OS layer or from a language manifest?
+. Identify at least one CVE that comes from a base OS package (e.g. `glibc`, `openssl`) and one from a language-level dependency (e.g. a Java JAR or npm module).
+
+TIP: The *Component Source* column distinguishes *OS* (base layer) from *Language* (application dependency). If your image is a minimal distroless or UBI-micro base, most CVEs will come from language dependencies.
+
+== Task 1.3: Trigger an on-demand image scan
+
+You can scan any image on demand — even one not currently deployed in the cluster.
+
+. In the RHACS Console, navigate to *Vulnerability Management* > *Images*.
+. Click *Watch Image* at the top right.
+. Enter an image reference to scan, for example:
++
+[source,text]
+----
+docker.io/library/nginx:1.21
+----
+. Click *Submit* and wait for the scan to complete.
+. Once the scan finishes, click into the result and review the CVE breakdown.
+. Compare the CVE count and CVSS distribution to the images already running in the cluster.
+
+NOTE: Watched images are scanned periodically until you remove them. This is useful for pre-deployment evaluation — scan a candidate image before promoting it to production.
+
+== Task 1.4: Scanner V4 architecture walkthrough
+
+Discuss with the group:
+
+* Why might a RHEL-based image show different CVE counts than an Alpine-based image with similar functionality? +
+  → Different vulnerability feeds (RHSA/OVAL vs Alpine SecDB), different package managers, different patching cadence.
+* A Quarkus application bundles dozens of JARs inside the image. Where does Scanner V4 find those dependencies? +
+  → The Indexer unpacks each layer and parses `pom.xml`, `MANIFEST.MF`, and fat-JAR contents. The Matcher correlates those against NVD and GitHub Advisory Database.
+* What happens when a CVE is marked *Fixable*? +
+  → A patched version of the affected package exists in the upstream feed. The development team can resolve it by updating the dependency and rebuilding.
+
+== Key takeaways
+
+* The vulnerability dashboard provides a single-pane view of risk across all clusters, images, and deployments.
+* Scanner V4 Indexer creates the SBOM; Matcher correlates it against CVE feeds.
+* Base OS and language-level vulnerabilities are evaluated through different feeds — coverage and timing differ.
+* On-demand image scanning lets you evaluate images before they reach the cluster.

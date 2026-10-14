@@ -1,0 +1,73 @@
+= Exercise 2: Automated vulnerability reports
+:navtitle: Exercise 2: Automated vulnerability reports
+
+Estimated time: 15 minutes.
+
+RHACS can generate scheduled or on-demand vulnerability reports in PDF and CSV format.
+Reports can be scoped to specific clusters, namespaces, or severity levels — replacing the need to manually export, zip, and email CSV files.
+
+== Task 2.1: Navigate to the reporting page
+
+. In the RHACS Console, navigate to *Vulnerability Management* > *Reporting*.
+. Review any existing report configurations.
++
+If no reports exist yet, this page will be empty — you will create one in the next task.
+
+== Task 2.2: Create a vulnerability report configuration
+
+. Click *Create report*.
+. Fill in the report details:
++
+[cols="1,2",options="header"]
+|===
+|Field |Value
+
+|Report name
+|`Lab - Namespace Vulnerability Report`
+
+|Description
+|`Fixable CVEs in the policy-lab namespace, scheduled weekly.`
+|===
+
+. Under *CVE severity*, select at least *Important* and *Critical*.
+. Check *Fixable CVEs only* if you want to limit the report to actionable items.
+. Under *Report scope*, configure the scope:
+** Select the cluster: *production*
+** Select the namespace: *policy-lab*
+. Under *Delivery destinations*, choose one:
+** *Download as CSV/PDF* — no email configuration needed.
+** *Email* — requires a configured email notifier (see note below).
+. Under *Schedule*, select *Weekly* and pick a day.
+. Click *Create*.
+
+NOTE: If no email notifier is configured in the environment, use the download option.
+You can configure an email notifier later under *Platform Configuration* > *Integrations* > *Email*.
+
+== Task 2.3: Generate an on-demand report
+
+You don't have to wait for the schedule — generate a report immediately.
+
+. From the *Reporting* page, locate the report you just created.
+. Click the three-dot menu (*⋮*) on the report row and select *Generate report*.
+. Wait for the report to complete (this may take a moment depending on the number of images).
+. Once ready, click *Download* to save the report.
+. Open the downloaded file and review its contents:
+** The *PDF* provides a summary view with severity breakdown and top affected images.
+** The *CSV* provides a detailed, machine-readable list of every CVE, component, image, and deployment.
+
+== Task 2.4: Review report contents
+
+Examine the downloaded report and answer:
+
+* How many fixable CVEs are in the scoped namespace?
+* Which image has the highest number of critical fixable CVEs?
+* Are there CVEs that appear across multiple images (shared base layer)?
+
+TIP: The CSV format is particularly useful for importing into ticketing systems or SIEM tools. You can automate this further with the RHACS API endpoint `/v2/compliance/report/export`.
+
+== Key takeaways
+
+* RHACS supports scheduled and on-demand vulnerability reports in PDF and CSV format.
+* Reports can be scoped by cluster, namespace, and severity — no need to export everything and filter manually.
+* On-demand generation lets you produce a report for a specific audience (audit, management review) at any time.
+* CSV exports can feed downstream automation — ticketing, dashboards, or compliance evidence collection.

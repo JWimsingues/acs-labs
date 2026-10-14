@@ -1,0 +1,57 @@
+= Operations & Day-2
+:navtitle: Overview
+
+A 90-minute hands-on lab for platform, infrastructure, and security engineering teams.
+
+[cols="1,3"]
+|===
+|Session date |TBD
+|Duration |90 minutes
+|Environment |Red Hat Showroom / RHACS {rhacs-version}
+|===
+
+== Lab objectives
+
+By completing this lab, participants will:
+
+. Navigate the RHACS vulnerability dashboard and understand how Scanner V4's Indexer and Matcher produce scan results for base OS and language-level dependencies.
+. Create automated, scheduled vulnerability reports (PDF/CSV) scoped to specific namespaces.
+. Build custom RBAC configurations with Permission Sets, Access Scopes, and Roles to enforce tenant isolation inside a shared ACS Central.
+. Map OIDC (Keycloak) group claims to custom ACS roles and enable the OpenShift Console Plugin for developer self-service.
+. Configure a generic webhook notifier to route policy violation alerts to external systems (OpenITCockpit / Nagios pattern).
+. Integrate RHACS with Splunk via HEC (HTTP Event Collector) for SIEM correlation of policy breach events.
+
+== Session flow
+
+[cols="1,2,1",options="header"]
+|===
+|Exercise |Focus |Time
+
+|xref:s2-01-prerequisites.adoc[Prerequisites]
+|Bastion access, `roxctl whoami`, clone lab repo
+|5 min
+
+|xref:s2-02-vuln-dashboard.adoc[Exercise 1]
+|Vulnerability dashboard and Scanner V4 architecture
+|15 min
+
+|xref:s2-03-vuln-reports.adoc[Exercise 2]
+|Automated vulnerability reports (PDF/CSV)
+|15 min
+
+|xref:s2-04-sac.adoc[Exercise 3]
+|Scoped Access Control — Permission Sets, Access Scopes, Roles
+|15 min
+
+|xref:s2-05-oidc-plugin.adoc[Exercise 4]
+|OIDC group mapping & OpenShift Console Plugin
+|15 min
+
+|xref:s2-06-webhook.adoc[Exercise 5]
+|Webhook notifier (generic webhook)
+|15 min
+
+|xref:s2-07-splunk.adoc[Exercise 6]
+|Splunk HEC integration
+|15 min
+|===
