@@ -94,12 +94,11 @@ TIP: The HEC URL uses the internal cluster service (`splunk.splunk.svc.cluster.l
 . Navigate to the *Policy behavior* section (step 4).
 . Under *Notification*, select *Lab - Splunk HEC* from the notifier dropdown.
 . Click *Save*.
-. On the bastion, create a deployment that will trigger the policy:
+. On the bastion, deploy a pod that contains `curl` into the pre-existing `frontend` namespace:
 +
 [source,bash]
 ----
-oc create namespace splunk-test
-oc run splunk-trigger --image=docker.io/library/ubuntu:20.04 --command -- sleep 3600 -n splunk-test
+oc run splunk-trigger --image=registry.access.redhat.com/ubi9/ubi:9.4 --command -- sleep 3600 -n frontend
 ----
 +
 . Wait approximately 30 seconds for ACS to scan the image and evaluate the policy.
@@ -133,11 +132,11 @@ index=* sourcetype="stackrox-alert"
 
 == Cleanup
 
-. Remove the test namespace:
+. Remove the test pod:
 +
 [source,bash]
 ----
-oc delete namespace splunk-test
+oc delete pod splunk-trigger -n frontend
 ----
 
 == Key takeaways

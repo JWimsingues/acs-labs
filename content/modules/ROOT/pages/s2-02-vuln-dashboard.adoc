@@ -30,7 +30,7 @@ This architecture means base OS vulnerabilities (RHEL, Alpine) and application-l
 == Task 1.2: Drill into an image
 
 . Still in *Vulnerability Management*, click the *Images* tab (or navigate via the left sidebar to *Vulnerability Management* > *Workload CVEs* and switch to the image view).
-. Select an image that shows a high CVE count (look for images based on older base layers).
+. Select an image that shows a high CVE count. Good candidates from the pre-deployed demo apps include `log4shell`, `apache-struts`, or `juice-shop` images.
 . On the image detail page, review the CVE table:
 ** *Fixable*: is a patched package version available?
 ** *CVSS Score*: severity of each CVE.

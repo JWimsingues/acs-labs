@@ -61,12 +61,11 @@ TIP: You can attach multiple notifiers to a single policy. For example, you can 
 
 == Task 5.4: Trigger a violation and inspect the payload
 
-. On the bastion, create a deployment that uses the `latest` tag:
+. On the bastion, deploy a pod with the `latest` tag into the pre-existing `backend` namespace:
 +
 [source,bash]
 ----
-oc create namespace webhook-test
-oc run webhook-trigger --image=docker.io/library/nginx:latest -n webhook-test
+oc run webhook-trigger --image=image-registry.openshift-image-registry.svc:5000/openshift/httpd:latest -n backend
 ----
 +
 . Wait a few seconds for ACS to detect the violation.
@@ -86,7 +85,7 @@ oc run webhook-trigger --image=docker.io/library/nginx:latest -n webhook-test
     },
     "deployment": {
       "name": "webhook-trigger",
-      "namespace": "webhook-test",
+      "namespace": "backend",
       ...
     },
     ...
@@ -102,7 +101,7 @@ CTIE uses OpenITCockpit (Nagios-based) as the central monitoring system. To rout
 
 . Deploy a small middleware service (or serverless function) that accepts the ACS webhook payload.
 . Transform the JSON into a Nagios passive check result:
-** *Host:* deployment namespace (e.g. `webhook-test`)
+** *Host:* deployment namespace (e.g. `backend`)
 ** *Service:* policy name (e.g. `Latest tag`)
 ** *State:* mapped from ACS severity (`CRITICAL_SEVERITY` → 2, `HIGH_SEVERITY` → 1, `LOW_SEVERITY` → 0)
 ** *Output:* violation summary text
@@ -112,11 +111,11 @@ This mapping is not implemented in this lab, but the webhook payload contains al
 
 == Cleanup
 
-. Remove the test namespace:
+. Remove the test pod:
 +
 [source,bash]
 ----
-oc delete namespace webhook-test
+oc delete pod webhook-trigger -n backend
 ----
 . Detach the webhook from the policy:
 ** Navigate to *Platform Configuration* > *Policy Management*.
