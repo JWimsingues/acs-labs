@@ -8,7 +8,7 @@ Reports can be scoped to specific clusters, namespaces, or severity levels, repl
 
 == Task 2.1: Navigate to the reporting page
 
-. In the RHACS Console, navigate to *Vulnerability Management* > *Vulnerability Reporting*.
+. In the RHACS Console, expand *Vulnerability Management* in the left sidebar and click *Reports*.
 . Review any existing report configurations.
 +
 If no reports exist yet, this page will be empty. You will create one in the next task.
@@ -47,7 +47,7 @@ You can configure an email notifier later under *Platform Configuration* > *Inte
 
 You don't have to wait for the schedule. Generate a report immediately.
 
-. From the *Vulnerability Reporting* page, locate the report you just created.
+. From the *Reports* page, locate the report you just created.
 . Click the three-dot menu (*⋮*) on the report row and select *Generate report*.
 . Wait for the report to complete (this may take a moment depending on the number of images).
 . Once ready, click *Download* to save the report.

@@ -13,23 +13,23 @@ Under the hood, **Scanner V4** splits the work into two stages:
 
 This architecture means base OS vulnerabilities (RHEL, Alpine) and application-level vulnerabilities (Quarkus, Spring, npm) are evaluated through different feeds, so coverage and timing can differ.
 
-== Task 1.1: Explore Workload CVEs
+== Task 1.1: Explore vulnerability results
 
-. In the RHACS Console, navigate to *Vulnerability Management* (left sidebar).
-. The default view is *Workload CVEs*, which shows every CVE found across all deployments in the cluster.
-. Use the filters at the top to narrow the view:
-** *Severity:* select *Critical* to see only the highest-severity CVEs.
-** *Fixable:* toggle to show only CVEs with an available fix.
+. In the RHACS Console, expand *Vulnerability Management* in the left sidebar and click *Results*.
+. The default tab is *User Workloads*. Use the dropdown in the top right to select *All vulnerable images*.
+. Use the filters to narrow the view:
+** *CVE severity:* select *Critical* to see only the highest-severity CVEs.
+** *CVE status:* filter for fixable CVEs to focus on actionable items.
 . Review the columns:
-** *CVE*: the CVE identifier (e.g. CVE-2024-xxxxx).
-** *Severity* and *CVSS score*: how critical the vulnerability is.
-** *Affected images*: how many images contain this CVE.
-** *First discovered*: when RHACS first detected it.
+** *CVE*: the CVE identifier (e.g. CVE-2026-46595).
+** *Images by severity*: how many images are affected, broken down by severity level.
+** *Top CVSS*: the highest CVSS score assigned to this CVE.
+** *Top NVD CVSS*: the NVD-sourced CVSS score (may differ from the vendor score).
 . Click on a CVE to see which deployments and images are affected.
 
 == Task 1.2: Drill into an image
 
-. Still in *Vulnerability Management*, click the *Images* tab (or navigate via the left sidebar to *Vulnerability Management* > *Workload CVEs* and switch to the image view).
+. On the *Results* page, switch from the *CVE* view to the *Images* view using the filter bar (change the dropdown from *CVE* to *Image*).
 . Select an image that shows a high CVE count. Good candidates from the pre-deployed demo apps include `log4shell`, `apache-struts`, or `juice-shop` images.
 . On the image detail page, review the CVE table:
 ** *Fixable*: is a patched package version available?
@@ -44,7 +44,7 @@ TIP: The *Source* column distinguishes *OS* (base layer) from *Language* (applic
 
 You can scan any image on demand, even one not currently deployed in the cluster.
 
-. In the RHACS Console, navigate to *Vulnerability Management* > *Workload CVEs*.
+. In the RHACS Console, navigate to *Vulnerability Management* > *Results*.
 . Click *Manage watched images* (top right).
 . Click *Add image* and enter an image reference to scan, for example:
 +
@@ -53,7 +53,7 @@ You can scan any image on demand, even one not currently deployed in the cluster
 docker.io/library/nginx:1.21
 ----
 . Click *Save* and wait for the scan to complete.
-. Navigate back to *Workload CVEs* and filter by the image name to see the results.
+. Navigate back to *Results* and use the *All vulnerable images* dropdown to switch to *Inactive images* to find your watched image.
 . Review the CVE breakdown and compare the CVE count and CVSS distribution to images already running in the cluster.
 
 NOTE: Watched images are scanned periodically until you remove them. This is useful for pre-deployment evaluation: scan a candidate image before promoting it to production.
@@ -71,7 +71,7 @@ Discuss with the group:
 
 == Key takeaways
 
-* The *Workload CVEs* view provides a unified view of vulnerabilities across all deployments, images, and components.
+* *Vulnerability Management* > *Results* provides a unified view of vulnerabilities across all deployments, images, and components.
 * Scanner V4 Indexer creates the SBOM; Matcher correlates it against CVE feeds.
 * Base OS and language-level vulnerabilities are evaluated through different feeds, so coverage and timing differ.
 * On-demand image scanning (watched images) lets you evaluate images before they reach the cluster.
