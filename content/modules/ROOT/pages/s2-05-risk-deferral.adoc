@@ -36,24 +36,29 @@ Example: exclude namespace `frontend` (or another non-critical app namespace in 
 
 IMPORTANT: After the exercise, remove the exclusion (or set the policy back to its previous scope) so later labs and other students are not affected.
 
-== Task 4.3: Defer a CVE with an auditable rationale
+== Task 4.3: Review vulnerability exceptions (deferral and false positive)
 
-. Navigate to *Vulnerability Management* > *Results*.
-. Switch to the *CVE* view if needed.
-. Filter for a *Critical* and *Fixable* CVE on an application image (juice-shop or log4shell images are good sources).
-. Open the CVE and choose *Defer* (wording may appear as *Request deferral* or *Defer CVE* depending on your role).
-. Set:
-** Duration: 30 days (or until a fixed version is available, if offered)
-** Rationale: `Lab deferral: vendor fix under evaluation; compensating controls documented for DSI review.`
-. Submit the request.
-+
-On this cluster, Admin can complete the workflow. If your user only has *Vulnerability Management Requester*, an Approver must approve before the exception becomes active.
-. Confirm the CVE shows *Deferred* (or appears under vulnerability exceptions) and is no longer treated as an active blocking finding for that scope.
+Creating a brand-new deferral request can fail on some Showroom builds even for Admin.
+This task focuses on the auditable exception record that SST and DSI rely on.
 
-NOTE: This environment may already contain sample exceptions such as a deferred Log4Shell CVE. Create a *new* deferral for a different CVE so you can see the full request flow.
+. Navigate to *Vulnerability Management*.
+. Open *Exception configuration* or *Vulnerability exceptions* (wording varies by UI build), or open an image CVE detail page and look for exception or request history.
+. Find an existing exception on this cluster. Sample records often include:
+** A *Deferred* exception for `CVE-2021-44228` (Log4Shell)
+** A *False positive* exception for another CVE
+. For one exception, note:
+** Target state (`Deferred` or `False positive`)
+** Status (`Approved`)
+** Scope (image registry, remote, and tag pattern)
+** Approver or requester identity if shown
+. Discuss with the group: what rationale would you require before approving a 30-day deferral in production?
+
+OPTIONAL: If your UI offers *Defer* or *Request deferral* on a CVE and the request succeeds, complete it with a 30-day duration and rationale
+`Lab deferral: vendor fix under evaluation; compensating controls documented for DSI review.`
+If the request fails or never creates a record, continue with the existing Approved exceptions above. That still meets the learning goal for this lab.
 
 == Key takeaways
 
 * Risk priority aggregates multiple signals so teams do not triage from a flat CVE list alone.
 * Policy scope exclusions keep production gates strict while reducing noise from sandboxes.
-* CVE deferral creates an auditable SST or DSI decision instead of silently ignoring a finding.
+* Approved deferral and false-positive exceptions are the auditable SST or DSI record when a CVE is not fixed immediately.
