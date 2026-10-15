@@ -45,22 +45,22 @@ NOTE: This Showroom cluster uses the ACS cluster name `production`. Application 
 +
 [cols="1,1",options="header"]
 |===
-|Resource |Access
-
-|Image
-|Read
-
-|Deployment
-|Read
+|Resource |Access level
 
 |Alert
-|Read
+|Read access
 
 |CVE
-|Read
+|Read access
+
+|Deployment
+|Read access
+
+|Image
+|Read access
 
 |WatchedImage
-|Read
+|Read access
 |===
 +
 Leave every other resource at *No access* (including `Access`, `WorkflowAdministration`, and integration-related resources).
@@ -81,23 +81,125 @@ NOTE: RHACS {rhacs-version} permission sets do not use a resource named `Policy`
 
 == Task 3.5: Create a Keycloak realm, client, group, and user
 
-Keycloak is available in this Showroom. Copy the SSO URL from your Showroom dashboard if it differs from the example below.
+Keycloak is pre-installed in this Showroom.
+Use the bastion `oc` CLI to discover the console URL and the temporary admin credentials yourself (do not guess a static password).
 
-. Open the Keycloak console (example for this environment: https://sso.apps.cluster-sz6zn.dyn.redhatworkshops.io).
-. Log in with the temporary admin credentials from the Showroom dashboard (example: user `temp-admin`).
-. Create realm `rhacs-lab` (*Create realm*).
-. Create an OpenID Connect client:
+=== Get the Keycloak URL and admin credentials
+
+. On the bastion, print the Keycloak route and admin console URL:
++
+[source,bash]
+----
+SSO_HOST="$(oc get route keycloak -n keycloak -o jsonpath='{.spec.host}')"
+echo "Keycloak base URL:  https://${SSO_HOST}"
+echo "Admin console URL:  https://${SSO_HOST}/admin"
+----
+. Print the temporary admin username and password from the operator bootstrap secret:
++
+[source,bash]
+----
+echo -n "Username: "
+oc -n keycloak get secret keycloak-initial-admin -o jsonpath='{.data.username}' | base64 -d
+echo
+echo -n "Password: "
+oc -n keycloak get secret keycloak-initial-admin -o jsonpath='{.data.password}' | base64 -d
+echo
+----
++
+The username is typically `temp-admin`. The password is generated per environment.
+
+TIP: You can also copy the SSO URL from the Showroom dashboard. The CLI values above are the source of truth when the dashboard and cluster disagree.
+
+=== Sign in to the admin console
+
+. Open the *Admin console URL* from the previous step (path `/admin`).
+. Sign in with the username and password you printed from `keycloak-initial-admin`.
++
+image::s2/s2-03-keycloak-login.png[Keycloak Sign in to your account page,width=720]
+. After login you land in the Keycloak Administration Console (a yellow banner may note that you are a temporary admin).
++
+image::s2/s2-03-keycloak-welcome.png[Keycloak Manage realms list after temporary admin login,width=720]
+
+=== Create the `rhacs-lab` realm
+
+. Click *Manage realms* (or open *Create realm*).
+. Click *Create realm*.
+. Set *Realm name* to `rhacs-lab` and leave *Enabled* On.
++
+image::s2/s2-03-keycloak-create-realm.png[Create realm dialog with Realm name rhacs-lab,width=720]
+. Click *Create*.
+. Confirm the current realm selector shows `rhacs-lab` before you continue.
+
+=== Create the `acs-central` OpenID Connect client
+
+. In realm `rhacs-lab`, open *Clients* and click *Create client*.
++
+image::s2/s2-03-keycloak-clients-list.png[Clients list with Create client action,width=720]
+. On *General settings*:
+** *Client type:* OpenID Connect
 ** *Client ID:* `acs-central`
-** *Client authentication:* On
-** *Valid redirect URIs:* `https://central-stackrox.apps.cluster-sz6zn.dyn.redhatworkshops.io/sso/providers/oidc/callback` (replace the Central hostname with yours if needed)
-. On the client *Credentials* tab, copy the client secret.
-. Add a *Group Membership* mapper named `groups` with token claim name `groups` (full group path Off). Enable the claim on the access token and ID token.
-. Create group `ctie-payments-devs`.
-. Create user `payments-dev`:
-** Set *Email* (example: `payments-dev@lab.local`) and turn *Email verified* On.
-** Clear *Required user actions* (none selected).
-** Set a password with *Temporary* Off (example: `lab-password`).
-** Join the user to `ctie-payments-devs`.
++
+image::s2/s2-03-keycloak-create-client-general.png[Create client General settings with Client ID acs-central,width=720]
+. Click *Next*.
+. On *Capability config*, set *Client authentication* to On (leave *Standard flow* enabled).
++
+image::s2/s2-03-keycloak-create-client-capability.png[Create client Capability config with Client authentication On,width=720]
+. Click *Next*.
+. On *Login settings*, set *Valid redirect URIs* to your Central callback URL.
++
+Example for this Showroom:
++
+[source,text]
+----
+https://central-stackrox.apps.cluster-sz6zn.dyn.redhatworkshops.io/sso/providers/oidc/callback
+----
++
+Replace the Central hostname with yours if needed.
++
+image::s2/s2-03-keycloak-create-client-login.png[Create client Login settings with Valid redirect URIs,width=720]
+. Click *Save*.
+. Open the client *Credentials* tab and copy the *Client secret* (you need it in Task 3.6).
++
+image::s2/s2-03-keycloak-client-credentials.png[acs-central Credentials tab with Client secret,width=720]
+
+=== Add a `groups` token mapper
+
+. Still on client `acs-central`, open the *Client scopes* tab.
+. Open the dedicated scope (named like `acs-central-dedicated`).
+. Open the *Mappers* tab, click *Configure a new mapper*, and choose *Group Membership*.
+. Configure:
+** *Name:* `groups`
+** *Token Claim Name:* `groups`
+** *Full group path:* Off
+** *Add to ID token:* On
+** *Add to access token:* On
++
+image::s2/s2-03-keycloak-groups-mapper.png[Group Membership mapper named groups with claim groups,width=720]
+. Click *Save*.
+
+=== Create the group and lab user
+
+. Open *Groups* and click *Create group*.
+. Name the group `ctie-payments-devs` and click *Create*.
++
+image::s2/s2-03-keycloak-create-group.png[Create a group dialog with name ctie-payments-devs,width=720]
+. Open *Users* and click *Add user* (or *Create new user*).
+. Set:
+** *Username:* `payments-dev`
+** *Email:* `payments-dev@lab.local` (or another address you control)
+** *Email verified:* On (required)
+** *Required user actions:* none selected
+. Click *Create*.
++
+image::s2/s2-03-keycloak-create-user.png[payments-dev user details with Email and Email verified settings,width=720]
++
+On the user *Details* tab, confirm *Email verified* is On and click *Save* if you had to change it.
+. Open the user *Credentials* tab, click *Set password*, set a password with *Temporary* Off (example: `lab-password`), then save.
++
+image::s2/s2-03-keycloak-user-password.png[Set password dialog with Temporary Off,width=720]
+. Open the user *Groups* tab, click *Join group*, select `ctie-payments-devs`, and join.
++
+image::s2/s2-03-keycloak-user-groups.png[Join group dialog selecting ctie-payments-devs,width=720]
 
 IMPORTANT: If *Email verified* is Off or a required action remains, Keycloak returns `Account is not fully set up` and the ACS login fails.
 
@@ -115,7 +217,7 @@ IMPORTANT: If *Email verified* is Off or a required action remains, Keycloak ret
 |`Keycloak - rhacs-lab`
 
 |Issuer
-|`https://sso.apps.cluster-sz6zn.dyn.redhatworkshops.io/realms/rhacs-lab`
+|`https://<SSO_HOST>/realms/rhacs-lab` (use the `SSO_HOST` value from Task 3.5; example: `https://sso.apps.cluster-sz6zn.dyn.redhatworkshops.io/realms/rhacs-lab`)
 
 |Client ID
 |`acs-central`
