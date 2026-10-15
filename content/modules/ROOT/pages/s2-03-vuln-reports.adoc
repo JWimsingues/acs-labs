@@ -6,15 +6,15 @@ Estimated time: 15 minutes.
 RHACS can generate scheduled or on-demand vulnerability reports in PDF and CSV format.
 Reports replace the old workflow of manually exporting, zipping, and emailing CSV files to tenant leads.
 
-On this Showroom, treat *download* or *Generate report* as the success path.
-Email delivery needs an SMTP notifier, which may not be configured.
+On this Showroom, use *on-demand download* as the success path.
+A *scheduled* report requires an email notifier. Without SMTP configured, leave the schedule empty and generate the report manually.
 
 == Task 2.1: Open Vulnerability Reporting
 
 . In the RHACS Console, expand *Vulnerability Management* and click *Reports* (UI label may also read *Vulnerability Reporting*).
 . Review any existing report configurations. An empty list is expected on a fresh lab.
 
-== Task 2.2: Create a report configuration
+== Task 2.2: Create a downloadable report configuration
 
 . Click *Create report*.
 . Fill in:
@@ -27,25 +27,27 @@ Email delivery needs an SMTP notifier, which may not be configured.
 |`Lab - Payments Vulnerability Report`
 
 |Description
-|`Fixable Important and Critical CVEs in payments, weekly.`
+|`Fixable Important and Critical CVEs for payments (on-demand download).`
 |===
 
 . Under CVE severity, select *Important* and *Critical*.
 . Enable *Fixable CVEs only* if the checkbox is available.
 . Under report scope, target the `payments` namespace on cluster *production*.
 +
-If the wizard asks for a *Collection*, pick an existing collection that includes application workloads (this cluster has collections such as `team-a-everything` or `shop-prod`), or create a simple collection that matches namespace `payments`.
-. Under delivery, choose *Download* (CSV/PDF) rather than email unless an email notifier is already configured.
-. Under schedule, select *Weekly* and pick a day.
+If the wizard asks for a *Collection*, pick an existing collection that includes application workloads (this cluster has collections such as `team-a-everything`, `shop-all`, or `shop-prod`), or create a simple collection that matches namespace `payments`.
+. Under delivery, choose *Download* (CSV/PDF). Do *not* select email unless an email notifier already exists.
+. Leave *Schedule* empty (or disabled).
++
+IMPORTANT: ACS rejects a report that has a schedule but no email notifier. Weekly email digests are the production pattern after SMTP is configured. This lab proves the report content with download instead.
 . Click *Create*.
 
 == Task 2.3: Generate and download on demand
 
 . From the *Reports* list, open the kebab menu (*⋮*) on `Lab - Payments Vulnerability Report`.
-. Select *Generate report* (or *Run now*).
+. Select *Generate report* and choose the *download* option if the UI asks how to deliver the run.
 . Wait until the run completes.
 . Download the PDF and/or CSV.
-. Open the file and confirm it contains CVE, image, and deployment detail for the scoped namespace.
+. Open the file and confirm it contains CVE, image, and deployment detail for the scoped collection or namespace.
 
 == Task 2.4: Review the output
 
@@ -59,6 +61,6 @@ TIP: CSV output is useful for ticketing or SIEM import. Report configurations ar
 
 == Key takeaways
 
-* Scheduled reports replace manual CSV email packs.
+* On-demand download proves report content without SMTP.
+* Scheduled reports need an email notifier. Configure that before enabling Weekly or Daily delivery.
 * Scope by cluster, namespace, or collection so each tenant gets only their data.
-* On-demand generate and download is enough to prove the workflow when SMTP is unavailable.
