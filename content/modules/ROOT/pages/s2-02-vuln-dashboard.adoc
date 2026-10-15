@@ -17,43 +17,60 @@ Base OS vulnerabilities and application-level vulnerabilities are evaluated thro
 
 == Task 1.1: Explore vulnerability results
 
-. In the RHACS Console, expand *Vulnerability Management* and click *Results*.
-. The default tab is *User Workloads*. Use the top-right dropdown to select *All vulnerable images* if you want inactive or watched images later.
-. Narrow the view:
-** *CVE severity:* *Critical*
-** *CVE status:* fixable CVEs only
-. Review columns such as *CVE*, *Images by severity*, *Top CVSS*, and *Top NVD CVSS*.
-. Click a CVE to see affected deployments and images.
+. In the RHACS Console, expand *Vulnerability Management* in the left navigation and click *Results*.
+. Confirm you land on the *User Workloads* tab (the default Results view).
++
+image::s2/s2-01-results-overview.png[User workload vulnerabilities Results page with default filters and CVE table,width=720]
+. Notice the default filters already applied under *Vulnerability findings*:
+** *CVE severity:* *Critical* and *Important*
+** *CVE status:* *Fixable*
++
+You can leave these as-is for triage, or click *Clear filters* if you want the full unfiltered list.
+. Optional: open *More Views* (next to *Virtual Machines*) if you need *All vulnerable images* or *Inactive images* later.
++
+image::s2/s2-01-more-views.png[More Views menu showing All vulnerable images and Inactive images,width=720]
+. Review the CVE table columns such as *CVE*, *Images by severity*, *Top CVSS*, and *Top NVD CVSS*.
+. Click any CVE name to open its detail page and see affected deployments and images.
+
+TIP: Switch entity scope with the *CVEs* / *Images* / *Deployments* toggles above the table. Those are not a dropdown labeled CVE or Image.
 
 == Task 1.2: Drill into an image (OS vs language)
 
-. On *Results*, switch the entity dropdown from *CVE* to *Image*.
-. Open a high-count image from the demo apps. Good candidates on this cluster:
-** `docker.io/bkimminich/juice-shop:latest` (namespace `juice-shop`)
-** images used by `log4shell` or `apache-struts`
-. In the image CVE table, note:
-** *Fixable*
-** *CVSS Score*
-** *Component*
-** *Source* (*OS* vs *Language*)
-. Identify at least one OS-layer CVE and one language-level CVE.
-
-TIP: Distroless or UBI Micro bases often show most findings under *Language*.
-
-== Task 1.3: On-demand scan with watched images
-
-. From *Vulnerability Management* > *Results*, click *Manage watched images*.
-. Click *Add image* and enter:
+. On *Results*, click the *Images* toggle (for example *96 Images*).
+. In *Filter results by Image name*, type `juice-shop` and apply the suggestion `docker.io/bkimminich/juice-shop:latest`.
+Other good demo candidates on this cluster:
+** `quay.io/mfoster/log4shell:0.1.0` (namespace `log4shell`)
+** `quay.io/mfoster/apache-struts:0.1.0` (namespace `apache-struts`)
+. Open the image. In the header, confirm:
+** *Scan time* ends with *by Scanner V4*
+** *OS* shows the base (juice-shop is `debian:13`)
+** Severity and fixable counts match the summary cards
 +
-[source,text]
-----
-docker.io/library/nginx:1.21
-----
-. Save and wait for the scan to finish.
-. Return to *Results*, choose *Inactive images* (or the watched-image view), and open `nginx:1.21`.
-. Compare severity distribution with a running demo image such as juice-shop.
+image::s2/s2-01-juice-shop-image.png[juice-shop image detail showing Scanner V4 scan and CVE severity summary,width=720]
+. Scroll to the CVE table. Columns include *CVE severity*, *CVE status* (*Fixable* / *Not fixable*), *CVSS*, and *Affected components*.
+. Expand a CVE row (chevron / *Details*). In the nested component table, find the *Source* column:
+** Language findings show values such as *NODEJS*, *JAVA*, or *GOLANG*
+** OS-layer findings show *OS*
+. Identify at least one *OS* Source finding and one language Source finding (for juice-shop, most Critical rows are *NODEJS*; expand further rows or clear severity filters if you need an *OS* example).
 
-NOTE: Watched images keep scanning until you remove them. Use that for pre-promotion checks.
+TIP: Distroless or UBI Micro bases often show most findings under language sources rather than *OS*.
+
+== Task 1.3: Compare severity across demo images
+
+. From *Vulnerability Management* > *Results*, click *Manage watched images* (top right).
++
+image::s2/s2-01-manage-watched-images.png[Manage watched images dialog with image name field and Add image to watch list,width=720]
++
+This dialog is how you keep scanning an image that is not deployed yet (pre-promotion checks). Close it for now; the rest of this task uses an nginx image that is already deployed and scanned on this cluster.
+. On *Results*, click the *Images* toggle.
+. In *Filter results by Image name*, type `nginx` and open `quay.io/rhpds/nginx:1.25`.
+. In the image header and summary cards, note:
+** *Scan time* (ends with *by Scanner V4*)
+** *CVEs by severity* counts
+** How many findings are *Fixable*
+. Compare those numbers with `docker.io/bkimminich/juice-shop:latest` from Task 1.2 (juice-shop is application-heavy with many *NODEJS* findings; this nginx image is OS-package heavy and typically shows a much larger CVE total).
+
+NOTE: *Manage watched images* remains the production path for candidates that are not running yet (*More Views* > *Inactive images* after they scan). On this Showroom, prefer the deployed `quay.io/rhpds/nginx:1.25` image for a reliable side-by-side comparison.
 
 == Task 1.4: Scanner V4 discussion
 
@@ -65,18 +82,18 @@ Discuss:
 
 == Key takeaways
 
-* *Results* is the unified triage surface for deploy-time vulnerability data.
-* Scanner V4 Indexer builds the SBOM. Matcher produces the CVE list.
-* *Source* separates OS packages from language dependencies.
-* Watched images let you evaluate candidates before they run in the cluster.
+* *Results* on *User Workloads* is the unified triage surface for deploy-time vulnerability data.
+* Scanner V4 Indexer builds the SBOM. Matcher produces the CVE list (visible in the image header as *by Scanner V4*).
+* Expanding a CVE row exposes *Source* (*OS* vs language types such as *NODEJS* or *JAVA*).
+* Comparing two scanned images (for example juice-shop vs `quay.io/rhpds/nginx:1.25`) shows how base OS and language stacks change severity mix. *Manage watched images* is the path for images that are not deployed yet.
 
 [.verification]
 ****
-Can you open a demo image (for example juice-shop) and identify at least one *OS* Source CVE and one *Language* Source CVE?
+Can you open a demo image (for example juice-shop), expand a CVE row, and identify at least one *OS* Source finding and one language Source finding (for example *NODEJS*)?
 
 [.success]
 You can triage with Scanner V4 results and separate base OS findings from language-level dependencies. Continue to Exercise 2.
 
 [.fail]
-Return to *Vulnerability Management* > *Results*, switch the entity to *Image*, open a high-count demo image, and check the *Source* column (*OS* vs *Language*).
+Return to *Vulnerability Management* > *Results*, click the *Images* toggle, open `docker.io/bkimminich/juice-shop:latest`, expand a CVE row, and check the nested *Source* column (*OS* vs *NODEJS* / *JAVA* / similar).
 ****
