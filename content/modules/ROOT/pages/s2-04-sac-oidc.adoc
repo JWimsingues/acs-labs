@@ -1,0 +1,147 @@
+= Exercise 3: Scoped Access Control and OIDC mapping
+:navtitle: Exercise 3: SAC and OIDC
+
+Estimated time: 20 minutes.
+
+RHACS *Scoped Access Control* (SAC) controls what each user can see and do inside a shared ACS Central.
+SAC uses three primitives:
+
+* *Permission Set*: what a user can do (read images, manage policies, and so on).
+* *Access Scope*: where those permissions apply (which clusters and namespaces).
+* *Role*: one Permission Set plus one Access Scope.
+
+You will create a tenant-scoped role for the `payments` namespace, map a Keycloak group to that role, and prove isolation with a test user login.
+
+== Task 3.1: Review default roles
+
+. In the RHACS Console, navigate to *Platform Configuration* > *Access Control*.
+. Open the *Roles* tab and review the built-in roles (*Admin*, *Analyst*, *Vulnerability Management Approver*, *Vulnerability Report Creator*).
+. Note any demo roles already present (for example `demo-team-a-dev`). You will create a separate lab role instead of reusing them.
+
+== Task 3.2: Create an Access Scope for payments
+
+. Open the *Access scopes* tab.
+. Click *Create access scope*.
+. Enter:
+** *Name:* `lab-payments-scope`
+** *Description:* `Limits visibility to the payments namespace on the production cluster.`
+. In the cluster and namespace tree:
+** Expand the *production* cluster.
+** Select only the *payments* namespace.
+. Click *Save*.
+
+NOTE: This Showroom cluster uses the ACS cluster name `production`. Application namespaces that exist for this lab include `payments`, `backend`, `frontend`, `juice-shop`, and `log4shell`.
+
+== Task 3.3: Create a Permission Set
+
+. Open the *Permission sets* tab.
+. Click *Create permission set*.
+. Enter:
+** *Name:* `lab-vuln-reader`
+** *Description:* `Read-only access to images, vulnerabilities, and deployments. No policy management.`
+. Set resource permissions:
++
+[cols="1,1",options="header"]
+|===
+|Resource |Access
+
+|Image
+|Read
+
+|Deployment
+|Read
+
+|Alert (Violations)
+|Read
+
+|Policy
+|No access
+
+|Administration
+|No access
+
+|Integration
+|No access
+|===
++
+. Click *Save*.
+
+TIP: Start from *No access* everywhere, then grant Read only where needed.
+
+== Task 3.4: Create a Role
+
+. Open the *Roles* tab.
+. Click *Create role*.
+. Enter:
+** *Name:* `lab-payments-vuln-reader`
+** *Description:* `Read-only vulnerability viewer scoped to payments.`
+** *Permission set:* `lab-vuln-reader`
+** *Access scope:* `lab-payments-scope`
+. Click *Save*.
+
+== Task 3.5: Create a Keycloak realm, client, group, and user
+
+Keycloak is available in this Showroom. Copy the SSO URL from your Showroom dashboard if it differs from the example below.
+
+. Open the Keycloak console (example for this environment: https://sso.apps.cluster-sz6zn.dyn.redhatworkshops.io).
+. Log in with the temporary admin credentials from the Showroom dashboard (example: user `temp-admin`).
+. Create realm `rhacs-lab` (*Create realm*).
+. Create an OpenID Connect client:
+** *Client ID:* `acs-central`
+** *Client authentication:* On
+** *Valid redirect URIs:* `https://central-stackrox.apps.cluster-sz6zn.dyn.redhatworkshops.io/sso/providers/oidc/callback` (replace the Central hostname with yours if needed)
+. On the client *Credentials* tab, copy the client secret.
+. Add a *Group Membership* mapper named `groups` with token claim name `groups` (full group path Off).
+. Create group `ctie-payments-devs`.
+. Create user `payments-dev`, set a non-temporary password (example: `lab-password`), and join the user to `ctie-payments-devs`.
+
+== Task 3.6: Add the OIDC auth provider in ACS
+
+. Return to RHACS > *Platform Configuration* > *Access Control* > *Auth providers*.
+. Click *Create auth provider* > *OpenID Connect*.
+. Fill in:
++
+[cols="1,2",options="header"]
+|===
+|Field |Value
+
+|Name
+|`Keycloak - rhacs-lab`
+
+|Issuer
+|`https://sso.apps.cluster-sz6zn.dyn.redhatworkshops.io/realms/rhacs-lab`
+
+|Client ID
+|`acs-central`
+
+|Client Secret
+|_(from Task 3.5)_
+
+|Mode
+|Auto-select (POST)
+|===
++
+. Under *Rules*, add:
+** *Key:* `groups`
+** *Value:* `ctie-payments-devs`
+** *Role:* `lab-payments-vuln-reader`
+. Click *Save*.
+
+== Task 3.7: Prove tenant isolation
+
+. Open a private or incognito browser window.
+. Open the RHACS Console URL.
+. Choose *Keycloak - rhacs-lab* and log in as `payments-dev`.
+. Verify:
+** *Vulnerability Management* shows workloads from `payments` only.
+** Other application namespaces (`backend`, `frontend`, `juice-shop`) are not visible.
+** *Policy Management* is empty or denied (no Policy permission).
+. Close the private window and return to your admin session.
+
+TIP: Optional stretch: in the OpenShift Console, open a Deployment and look for the ACS *Vulnerabilities* tab if the ACS Console Plugin is enabled on your cluster. That path is not required to complete this exercise.
+
+== Key takeaways
+
+* SAC isolates tenants inside one ACS Central using Permission Sets, Access Scopes, and Roles.
+* OIDC group mapping assigns those roles automatically from identity group claims.
+* A scoped login is the proof that multi-tenant ACS works without a separate Central per team.
