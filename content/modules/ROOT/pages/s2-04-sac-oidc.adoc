@@ -6,7 +6,7 @@ Estimated time: 20 minutes.
 RHACS *Scoped Access Control* (SAC) controls what each user can see and do inside a shared ACS Central.
 SAC uses three primitives:
 
-* *Permission Set*: what a user can do (read images, manage policies, and so on).
+* *Permission Set*: what a user can do (read images, manage access, and so on).
 * *Access Scope*: where those permissions apply (which clusters and namespaces).
 * *Role*: one Permission Set plus one Access Scope.
 
@@ -38,8 +38,8 @@ NOTE: This Showroom cluster uses the ACS cluster name `production`. Application 
 . Click *Create permission set*.
 . Enter:
 ** *Name:* `lab-vuln-reader`
-** *Description:* `Read-only access to images, vulnerabilities, and deployments. No policy management.`
-. Set resource permissions:
+** *Description:* `Read-only access to images, vulnerabilities, and deployments.`
+. Start from *No access* on every resource, then set only:
 +
 [cols="1,1",options="header"]
 |===
@@ -51,22 +51,20 @@ NOTE: This Showroom cluster uses the ACS cluster name `production`. Application 
 |Deployment
 |Read
 
-|Alert (Violations)
+|Alert
 |Read
 
-|Policy
-|No access
+|CVE
+|Read
 
-|Administration
-|No access
-
-|Integration
-|No access
+|WatchedImage
+|Read
 |===
 +
+Leave every other resource at *No access* (including `Access`, `WorkflowAdministration`, and integration-related resources).
 . Click *Save*.
 
-TIP: Start from *No access* everywhere, then grant Read only where needed.
+NOTE: RHACS {rhacs-version} permission sets do not use a resource named `Policy`. Policy pages are gated by other resources such as workflow or access administration. Keeping those at *No access* is enough for a read-only vuln viewer.
 
 == Task 3.4: Create a Role
 
@@ -91,9 +89,15 @@ Keycloak is available in this Showroom. Copy the SSO URL from your Showroom dash
 ** *Client authentication:* On
 ** *Valid redirect URIs:* `https://central-stackrox.apps.cluster-sz6zn.dyn.redhatworkshops.io/sso/providers/oidc/callback` (replace the Central hostname with yours if needed)
 . On the client *Credentials* tab, copy the client secret.
-. Add a *Group Membership* mapper named `groups` with token claim name `groups` (full group path Off).
+. Add a *Group Membership* mapper named `groups` with token claim name `groups` (full group path Off). Enable the claim on the access token and ID token.
 . Create group `ctie-payments-devs`.
-. Create user `payments-dev`, set a non-temporary password (example: `lab-password`), and join the user to `ctie-payments-devs`.
+. Create user `payments-dev`:
+** Set *Email* (example: `payments-dev@lab.local`) and turn *Email verified* On.
+** Clear *Required user actions* (none selected).
+** Set a password with *Temporary* Off (example: `lab-password`).
+** Join the user to `ctie-payments-devs`.
+
+IMPORTANT: If *Email verified* is Off or a required action remains, Keycloak returns `Account is not fully set up` and the ACS login fails.
 
 == Task 3.6: Add the OIDC auth provider in ACS
 
@@ -135,7 +139,7 @@ Keycloak is available in this Showroom. Copy the SSO URL from your Showroom dash
 . Verify:
 ** *Vulnerability Management* shows workloads from `payments` only.
 ** Other application namespaces (`backend`, `frontend`, `juice-shop`) are not visible.
-** *Policy Management* is empty or denied (no Policy permission).
+** Administrative areas such as creating auth providers or broad access-control changes are not available to this user.
 . Close the private window and return to your admin session.
 
 TIP: Optional stretch: in the OpenShift Console, open a Deployment and look for the ACS *Vulnerabilities* tab if the ACS Console Plugin is enabled on your cluster. That path is not required to complete this exercise.
