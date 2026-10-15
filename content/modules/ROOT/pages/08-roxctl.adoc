@@ -29,9 +29,7 @@ Policies with `FAIL_BUILD_ENFORCEMENT` are marked *BREAKS BUILD* and cause exit 
 +
 [source,bash]
 ----
-roxctl image check \
-  --endpoint "$ROX_CENTRAL_ADDRESS" \
-  -i docker.io/library/ubuntu:20.04
+roxctl image check -i docker.io/library/ubuntu:20.04
 ----
 . Check the exit code:
 +
@@ -55,7 +53,6 @@ What to observe in the output:
 [source,bash]
 ----
 roxctl deployment check \
-  --endpoint "$ROX_CENTRAL_ADDRESS" \
   --cluster production \
   --namespace policy-lab \
   -f content/modules/ROOT/examples/unapproved-external-app.yaml
@@ -103,4 +100,4 @@ NOTE: Exit code `1` from either command is what GitLab CI, Azure DevOps, or Tekt
 
 * `image check` evaluates the image alone (BUILD + DEPLOY image policies). `deployment check` evaluates the full manifest (DEPLOY policies including spec-level criteria). A pipeline should run both.
 * `FAIL_BUILD_ENFORCEMENT` drives exit code `1` for `image check`. `SCALE_TO_ZERO_ENFORCEMENT` drives exit code `1` for `deployment check`.
-* `roxctl` uses `ROX_API_TOKEN` from the environment; pass `--endpoint`, not `--token`.
+* `roxctl` reads `ROX_ENDPOINT` and `ROX_API_TOKEN` from the environment (set in the prerequisites). No flags needed for authentication or endpoint.
