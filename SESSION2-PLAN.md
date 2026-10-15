@@ -13,9 +13,9 @@
 | # | Exercise | Topic | Time | Status |
 |---|----------|-------|------|--------|
 | 1 | Vulnerability dashboard and Scanner V4 | Vulnerability Management | 15 min | Verified on Showroom |
-| 2 | Automated vulnerability reports (PDF/CSV) | Vulnerability Management | 15 min | Download-first path |
-| 3 | SAC and OIDC group mapping | RBAC and Identity | 20 min | Keycloak verified |
-| 4 | Risk profiling and CVE deferral | Risk and exceptions | 15 min | New (PDF-aligned) |
+| 2 | Automated vulnerability reports (PDF/CSV) | Vulnerability Management | 15 min | On-demand download (no schedule without SMTP) |
+| 3 | SAC and OIDC group mapping | RBAC and Identity | 20 min | Keycloak verified; 4.11 permission resources |
+| 4 | Risk profiling and CVE deferral | Risk and exceptions | 15 min | Risk + exclusion verified; new deferral create flaky |
 | 5 | Webhook notifier | Notifiers | 15 min | webhook.site verified |
 | 6 | Splunk HEC integration | Notifiers | 15 min | HEC verified |
 
@@ -26,7 +26,10 @@
 * ACS version: 4.11.5. Cluster name in ACS: `production`.
 * Namespaces present: `payments`, `backend`, `frontend`, `juice-shop`, `log4shell`, `apache-struts`. No `policy-lab`.
 * High-priority demo workload for Risk: `juice-shop`.
-* Vulnerability exceptions API works (`v2/vulnerability-exceptions`). Sample deferred and false-positive exceptions may already exist.
+* Vulnerability exceptions list works. Sample Deferred and False positive exceptions already exist. Creating a *new* deferral via GraphQL failed on this build; Ex 4 uses review of existing exceptions as the required path.
+* Scheduled vulnerability reports require an email notifier. Download-only reports must leave Schedule empty, then Generate with download.
+* Permission set resources in 4.11 do not include `Policy` / `Administration` / `Integration` names from older docs. Use `Image`, `Deployment`, `Alert`, `CVE`, `WatchedImage`.
+* Keycloak lab users need Email verified On and no Required user actions, or login fails with `Account is not fully set up`.
 * Auth providers out of the box: basic (+ monitoring userpki). Students create Keycloak OIDC.
 * Keycloak `temp-admin` login works.
 * Policy `Latest tag` enabled (webhook trigger). Policy `Curl in Image` disabled (Splunk trigger uses Alpine package manager policy instead).
