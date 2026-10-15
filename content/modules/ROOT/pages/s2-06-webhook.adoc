@@ -118,6 +118,13 @@ This mapping is not implemented in this lab, but the webhook payload contains al
 ----
 oc delete namespace webhook-test
 ----
+. Detach the webhook from the policy:
+** Navigate to *Platform Configuration* > *Policy Management*.
+** Search for *Latest tag*, click the policy name.
+** Click *Actions* > *Edit policy*.
+** Navigate to *Policy behavior* (step 4).
+** Remove *Lab - Webhook (OpenITCockpit)* from the notifier dropdown.
+** Click *Save*.
 
 == Key takeaways
 

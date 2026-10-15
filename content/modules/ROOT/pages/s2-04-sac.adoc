@@ -43,9 +43,9 @@ This makes it possible to run a single ACS Central for multiple teams without ex
 |Vulnerability Report Creator
 |Can create and manage vulnerability report configurations
 |===
-
-NOTE: Your environment may also contain pre-configured demo roles (e.g. `demo-team-a-dev`). These were created as part of the Showroom setup — you can review them for reference.
 +
+NOTE: Your environment may also contain pre-configured demo roles (e.g. `demo-team-a-dev`). These were created as part of the Showroom setup — you can review them for reference.
+
 . Click on *Analyst* and note the Permission Set and Access Scope it uses.
 
 == Task 3.2: Create an Access Scope

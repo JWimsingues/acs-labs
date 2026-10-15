@@ -37,6 +37,15 @@ Before configuring ACS, you need a Keycloak realm with a client and a test group
 . Copy the client secret:
 ** On the client detail page, select the *Credentials* tab.
 ** Copy the *Client secret* value — you will need it in Task 4.3.
+. Add a groups protocol mapper so the `groups` claim appears in the OIDC token:
+** Navigate to *Clients* > *acs-central* > *Client scopes* tab.
+** Click the scope named *acs-central-dedicated*.
+** Click *Configure a new mapper* (or *Add mapper* > *By configuration*).
+** Select *Group Membership*.
+** Set *Name:* `groups`
+** Set *Token Claim Name:* `groups`
+** Toggle *Full group path* to *Off*.
+** Click *Save*.
 . Create a group:
 ** Navigate to *Groups* > *Create group*.
 ** *Name:* `ctie-payments-devs`

@@ -8,7 +8,7 @@ Reports can be scoped to specific clusters, namespaces, or severity levels — r
 
 == Task 2.1: Navigate to the reporting page
 
-. In the RHACS Console, navigate to *Vulnerability Management* > *Reporting*.
+. In the RHACS Console, navigate to *Vulnerability Management* > *Vulnerability Reporting*.
 . Review any existing report configurations.
 +
 If no reports exist yet, this page will be empty — you will create one in the next task.
@@ -26,14 +26,14 @@ If no reports exist yet, this page will be empty — you will create one in the 
 |`Lab - Namespace Vulnerability Report`
 
 |Description
-|`Fixable CVEs in the policy-lab namespace, scheduled weekly.`
+|`Fixable CVEs in the backend namespace, scheduled weekly.`
 |===
 
 . Under *CVE severity*, select at least *Important* and *Critical*.
 . Check *Fixable CVEs only* if you want to limit the report to actionable items.
 . Under *Report scope*, configure the scope:
 ** Select the cluster: *production*
-** Select the namespace: *policy-lab*
+** Select the namespace: *backend*
 . Under *Delivery destinations*, choose one:
 ** *Download as CSV/PDF* — no email configuration needed.
 ** *Email* — requires a configured email notifier (see note below).
@@ -47,7 +47,7 @@ You can configure an email notifier later under *Platform Configuration* > *Inte
 
 You don't have to wait for the schedule — generate a report immediately.
 
-. From the *Reporting* page, locate the report you just created.
+. From the *Vulnerability Reporting* page, locate the report you just created.
 . Click the three-dot menu (*⋮*) on the report row and select *Generate report*.
 . Wait for the report to complete (this may take a moment depending on the number of images).
 . Once ready, click *Download* to save the report.
@@ -63,7 +63,7 @@ Examine the downloaded report and answer:
 * Which image has the highest number of critical fixable CVEs?
 * Are there CVEs that appear across multiple images (shared base layer)?
 
-TIP: The CSV format is particularly useful for importing into ticketing systems or SIEM tools. You can automate this further with the RHACS API endpoint `/v2/compliance/report/export`.
+TIP: The CSV format is particularly useful for importing into ticketing systems or SIEM tools. You can automate report management further with the RHACS API endpoint `/v2/reports/configurations`.
 
 == Key takeaways
 

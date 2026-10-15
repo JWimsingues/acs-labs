@@ -4,7 +4,7 @@
 Estimated time: 15 minutes.
 
 RHACS continuously scans every image running in your clusters.
-The vulnerability dashboard aggregates those results into a single view — top risky images, most common CVEs, and a fixable-versus-unfixable breakdown.
+The *Vulnerability Management* section aggregates those results so you can triage by workload, image, or individual CVE.
 
 Under the hood, **Scanner V4** splits the work into two stages:
 
@@ -13,44 +13,48 @@ Under the hood, **Scanner V4** splits the work into two stages:
 
 This architecture means base OS vulnerabilities (RHEL, Alpine) and application-level vulnerabilities (Quarkus, Spring, npm) are evaluated through different feeds, so coverage and timing can differ.
 
-== Task 1.1: Explore the vulnerability dashboard
+== Task 1.1: Explore Workload CVEs
 
-. In the RHACS Console, navigate to *Vulnerability Management* > *Dashboard*.
-. Review the four summary widgets at the top:
-** *Top Risky Deployments by CVE Count and CVSS Score*
-** *Recently Detected Vulnerabilities*
-** *Most Common Vulnerabilities*
-** *Deployments with Most Severe Policy Violations*
-. Click into the *Top Risky Deployments* widget and note which deployment ranks highest.
+. In the RHACS Console, navigate to *Vulnerability Management* (left sidebar).
+. The default view is *Workload CVEs* — it shows every CVE found across all deployments in the cluster.
+. Use the filters at the top to narrow the view:
+** *Severity:* select *Critical* to see only the highest-severity CVEs.
+** *Fixable:* toggle to show only CVEs with an available fix.
+. Review the columns:
+** *CVE* — the CVE identifier (e.g. CVE-2024-xxxxx).
+** *Severity* and *CVSS score* — how critical the vulnerability is.
+** *Affected images* — how many images contain this CVE.
+** *First discovered* — when RHACS first detected it.
+. Click on a CVE to see which deployments and images are affected.
 
 == Task 1.2: Drill into an image
 
-. From the dashboard, click *Images* in the left sidebar (under *Vulnerability Management*).
+. Still in *Vulnerability Management*, click the *Images* tab (or navigate via the left sidebar to *Vulnerability Management* > *Workload CVEs* and switch to the image view).
 . Select an image that shows a high CVE count (look for images based on older base layers).
 . On the image detail page, review the CVE table:
-** *Fixable* column — is a patched package version available?
+** *Fixable* — is a patched package version available?
 ** *CVSS Score* — severity of each CVE.
 ** *Component* — which package introduced the vulnerability.
-** *Component Source* — was it detected from the OS layer or from a language manifest?
+** *Source* — was it detected from the *OS* layer or from a *Language* manifest?
 . Identify at least one CVE that comes from a base OS package (e.g. `glibc`, `openssl`) and one from a language-level dependency (e.g. a Java JAR or npm module).
 
-TIP: The *Component Source* column distinguishes *OS* (base layer) from *Language* (application dependency). If your image is a minimal distroless or UBI-micro base, most CVEs will come from language dependencies.
+TIP: The *Source* column distinguishes *OS* (base layer) from *Language* (application dependency). If your image is a minimal distroless or UBI-micro base, most CVEs will come from language dependencies.
 
 == Task 1.3: Trigger an on-demand image scan
 
 You can scan any image on demand — even one not currently deployed in the cluster.
 
-. In the RHACS Console, navigate to *Vulnerability Management* > *Images*.
-. Click *Watch Image* at the top right.
-. Enter an image reference to scan, for example:
+. In the RHACS Console, navigate to *Vulnerability Management* > *Workload CVEs*.
+. Click *Manage watched images* (top right).
+. Click *Add image* and enter an image reference to scan, for example:
 +
 [source,text]
 ----
 docker.io/library/nginx:1.21
 ----
-. Click *Submit* and wait for the scan to complete.
-. Once the scan finishes, click into the result and review the CVE breakdown.
-. Compare the CVE count and CVSS distribution to the images already running in the cluster.
+. Click *Save* and wait for the scan to complete.
+. Navigate back to *Workload CVEs* and filter by the image name to see the results.
+. Review the CVE breakdown and compare the CVE count and CVSS distribution to images already running in the cluster.
 
 NOTE: Watched images are scanned periodically until you remove them. This is useful for pre-deployment evaluation — scan a candidate image before promoting it to production.
 
@@ -67,7 +71,7 @@ Discuss with the group:
 
 == Key takeaways
 
-* The vulnerability dashboard provides a single-pane view of risk across all clusters, images, and deployments.
+* The *Workload CVEs* view provides a unified view of vulnerabilities across all deployments, images, and components.
 * Scanner V4 Indexer creates the SBOM; Matcher correlates it against CVE feeds.
 * Base OS and language-level vulnerabilities are evaluated through different feeds — coverage and timing differ.
-* On-demand image scanning lets you evaluate images before they reach the cluster.
+* On-demand image scanning (watched images) lets you evaluate images before they reach the cluster.
