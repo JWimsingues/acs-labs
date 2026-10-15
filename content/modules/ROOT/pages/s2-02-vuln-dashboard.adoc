@@ -1,77 +1,69 @@
-= Exercise 1: Vulnerability dashboard & Scanner V4
-:navtitle: Exercise 1: Vulnerability dashboard & Scanner V4
+= Exercise 1: Vulnerability dashboard and Scanner V4
+:navtitle: Exercise 1: Vulnerability dashboard and Scanner V4
 
 Estimated time: 15 minutes.
 
 RHACS continuously scans every image running in your clusters.
-The *Vulnerability Management* section aggregates those results so you can triage by workload, image, or individual CVE.
+*Vulnerability Management* aggregates those results so you can triage by workload, image, or individual CVE.
 
-Under the hood, **Scanner V4** splits the work into two stages:
+Under the hood, *Scanner V4* splits the work into two stages:
 
-* **Indexer**: generates a Software Bill of Materials (SBOM) by unpacking each image layer and cataloguing installed packages (RPM, APK, dpkg) and language-level dependencies (Java JARs, Go modules, Python wheels, Node packages).
-* **Matcher**: correlates that SBOM against vulnerability feeds (NVD, Red Hat OVAL/RHSA, Alpine SecDB, Debian Security Tracker) to produce the final CVE list.
+* *Indexer*: generates a Software Bill of Materials (SBOM) by unpacking each image layer and cataloguing installed packages (RPM, APK, dpkg) and language-level dependencies (Java JARs, Go modules, Python wheels, Node packages).
+* *Matcher*: correlates that SBOM against vulnerability feeds (NVD, Red Hat OVAL/RHSA, Alpine SecDB, Debian Security Tracker) to produce the final CVE list.
 
-This architecture means base OS vulnerabilities (RHEL, Alpine) and application-level vulnerabilities (Quarkus, Spring, npm) are evaluated through different feeds, so coverage and timing can differ.
+Base OS vulnerabilities and application-level vulnerabilities are evaluated through different feeds, so coverage and timing can differ.
 
 == Task 1.1: Explore vulnerability results
 
-. In the RHACS Console, expand *Vulnerability Management* in the left sidebar and click *Results*.
-. The default tab is *User Workloads*. Use the dropdown in the top right to select *All vulnerable images*.
-. Use the filters to narrow the view:
-** *CVE severity:* select *Critical* to see only the highest-severity CVEs.
-** *CVE status:* filter for fixable CVEs to focus on actionable items.
-. Review the columns:
-** *CVE*: the CVE identifier (e.g. CVE-2026-46595).
-** *Images by severity*: how many images are affected, broken down by severity level.
-** *Top CVSS*: the highest CVSS score assigned to this CVE.
-** *Top NVD CVSS*: the NVD-sourced CVSS score (may differ from the vendor score).
-. Click on a CVE to see which deployments and images are affected.
+. In the RHACS Console, expand *Vulnerability Management* and click *Results*.
+. The default tab is *User Workloads*. Use the top-right dropdown to select *All vulnerable images* if you want inactive or watched images later.
+. Narrow the view:
+** *CVE severity:* *Critical*
+** *CVE status:* fixable CVEs only
+. Review columns such as *CVE*, *Images by severity*, *Top CVSS*, and *Top NVD CVSS*.
+. Click a CVE to see affected deployments and images.
 
-== Task 1.2: Drill into an image
+== Task 1.2: Drill into an image (OS vs language)
 
-. On the *Results* page, switch from the *CVE* view to the *Images* view using the filter bar (change the dropdown from *CVE* to *Image*).
-. Select an image that shows a high CVE count. Good candidates from the pre-deployed demo apps include `log4shell`, `apache-struts`, or `juice-shop` images.
-. On the image detail page, review the CVE table:
-** *Fixable*: is a patched package version available?
-** *CVSS Score*: severity of each CVE.
-** *Component*: which package introduced the vulnerability.
-** *Source*: was it detected from the *OS* layer or from a *Language* manifest?
-. Identify at least one CVE that comes from a base OS package (e.g. `glibc`, `openssl`) and one from a language-level dependency (e.g. a Java JAR or npm module).
+. On *Results*, switch the entity dropdown from *CVE* to *Image*.
+. Open a high-count image from the demo apps. Good candidates on this cluster:
+** `docker.io/bkimminich/juice-shop:latest` (namespace `juice-shop`)
+** images used by `log4shell` or `apache-struts`
+. In the image CVE table, note:
+** *Fixable*
+** *CVSS Score*
+** *Component*
+** *Source* (*OS* vs *Language*)
+. Identify at least one OS-layer CVE and one language-level CVE.
 
-TIP: The *Source* column distinguishes *OS* (base layer) from *Language* (application dependency). If your image is a minimal distroless or UBI-micro base, most CVEs will come from language dependencies.
+TIP: Distroless or UBI Micro bases often show most findings under *Language*.
 
-== Task 1.3: Trigger an on-demand image scan
+== Task 1.3: On-demand scan with watched images
 
-You can scan any image on demand, even one not currently deployed in the cluster.
-
-. In the RHACS Console, navigate to *Vulnerability Management* > *Results*.
-. Click *Manage watched images* (top right).
-. Click *Add image* and enter an image reference to scan, for example:
+. From *Vulnerability Management* > *Results*, click *Manage watched images*.
+. Click *Add image* and enter:
 +
 [source,text]
 ----
 docker.io/library/nginx:1.21
 ----
-. Click *Save* and wait for the scan to complete.
-. Navigate back to *Results* and use the *All vulnerable images* dropdown to switch to *Inactive images* to find your watched image.
-. Review the CVE breakdown and compare the CVE count and CVSS distribution to images already running in the cluster.
+. Save and wait for the scan to finish.
+. Return to *Results*, choose *Inactive images* (or the watched-image view), and open `nginx:1.21`.
+. Compare severity distribution with a running demo image such as juice-shop.
 
-NOTE: Watched images are scanned periodically until you remove them. This is useful for pre-deployment evaluation: scan a candidate image before promoting it to production.
+NOTE: Watched images keep scanning until you remove them. Use that for pre-promotion checks.
 
-== Task 1.4: Scanner V4 architecture walkthrough
+== Task 1.4: Scanner V4 discussion
 
-Discuss with the group:
+Discuss:
 
-* Why might a RHEL-based image show different CVE counts than an Alpine-based image with similar functionality? +
-  → Different vulnerability feeds (RHSA/OVAL vs Alpine SecDB), different package managers, different patching cadence.
-* A Quarkus application bundles dozens of JARs inside the image. Where does Scanner V4 find those dependencies? +
-  → The Indexer unpacks each layer and parses `pom.xml`, `MANIFEST.MF`, and fat-JAR contents. The Matcher correlates those against NVD and GitHub Advisory Database.
-* What happens when a CVE is marked *Fixable*? +
-  → A patched version of the affected package exists in the upstream feed. The development team can resolve it by updating the dependency and rebuilding.
+* Why might a RHEL-based image and an Alpine-based image show different CVE counts for similar apps?
+* Where does Scanner V4 find Quarkus or Spring JARs inside a fat JAR image?
+* What does *Fixable* mean for the development team?
 
 == Key takeaways
 
-* *Vulnerability Management* > *Results* provides a unified view of vulnerabilities across all deployments, images, and components.
-* Scanner V4 Indexer creates the SBOM; Matcher correlates it against CVE feeds.
-* Base OS and language-level vulnerabilities are evaluated through different feeds, so coverage and timing differ.
-* On-demand image scanning (watched images) lets you evaluate images before they reach the cluster.
+* *Results* is the unified triage surface for deploy-time vulnerability data.
+* Scanner V4 Indexer builds the SBOM. Matcher produces the CVE list.
+* *Source* separates OS packages from language dependencies.
+* Watched images let you evaluate candidates before they run in the cluster.
