@@ -4,7 +4,7 @@
 Estimated time: 15 minutes.
 
 RHACS can push policy violation alerts to external systems using *notifiers*.
-A *Generic Webhook* notifier sends a JSON payload via HTTP POST to any endpoint — making it compatible with monitoring systems like OpenITCockpit (Nagios-based), PagerDuty, ServiceNow, or any custom receiver.
+A *Generic Webhook* notifier sends a JSON payload via HTTP POST to any endpoint, making it compatible with monitoring systems like OpenITCockpit (Nagios-based), PagerDuty, ServiceNow, or any custom receiver.
 
 In this exercise you will configure a webhook notifier, attach it to a policy, trigger a violation, and inspect the payload.
 
@@ -14,7 +14,7 @@ You need a publicly reachable endpoint that accepts HTTP POST requests. https://
 
 . Open https://webhook.site in a new browser tab.
 . A unique URL is generated automatically (e.g. `https://webhook.site/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`).
-. Copy this URL — you will use it in the next task.
+. Copy this URL. You will use it in the next task.
 +
 Leave this tab open so you can see incoming requests in real time.
 
@@ -44,7 +44,7 @@ Leave this tab open so you can see incoming requests in real time.
 |===
 +
 . Leave *Headers* and *Extra fields* empty for now.
-. Click *Test* to verify connectivity — you should see a test payload arrive at webhook.site.
+. Click *Test* to verify connectivity. You should see a test payload arrive at webhook.site.
 . Click *Save*.
 
 == Task 5.3: Attach the webhook to a policy
@@ -57,7 +57,7 @@ Leave this tab open so you can see incoming requests in real time.
 . Under *Notification*, select *Lab - Webhook (OpenITCockpit)* from the notifier dropdown.
 . Click *Save*.
 
-TIP: You can attach multiple notifiers to a single policy — for example, both a webhook and Splunk.
+TIP: You can attach multiple notifiers to a single policy. For example, you can attach both a webhook and Splunk to the same policy.
 
 == Task 5.4: Trigger a violation and inspect the payload
 
@@ -96,7 +96,7 @@ oc run webhook-trigger --image=docker.io/library/nginx:latest -n webhook-test
 
 The payload includes the full policy details, deployment metadata, and violation context.
 
-== Task 5.5: Discussion — mapping to OpenITCockpit
+== Task 5.5: Discussion: mapping to OpenITCockpit
 
 CTIE uses OpenITCockpit (Nagios-based) as the central monitoring system. To route ACS alerts there, you would:
 
@@ -128,7 +128,7 @@ oc delete namespace webhook-test
 
 == Key takeaways
 
-* Generic Webhooks are the most flexible notifier type — any HTTP endpoint can receive ACS alerts.
+* Generic Webhooks are the most flexible notifier type: any HTTP endpoint can receive ACS alerts.
 * The JSON payload contains full policy, deployment, and violation context.
 * Webhook.site is useful for prototyping; production systems use middleware to transform and route the payload.
 * One policy can send alerts to multiple notifiers simultaneously.

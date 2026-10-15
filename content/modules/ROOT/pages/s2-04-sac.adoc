@@ -3,12 +3,12 @@
 
 Estimated time: 15 minutes.
 
-RHACS supports *Scoped Access Control* (SAC) — a fine-grained RBAC model that controls what each user can see and do inside a shared ACS Central.
+RHACS supports *Scoped Access Control* (SAC), a fine-grained RBAC model that controls what each user can see and do inside a shared ACS Central.
 SAC is built from three primitives:
 
-* **Permission Set** — defines _what_ a user can do (read images, write policies, manage integrations, etc.).
-* **Access Scope** — defines _where_ those permissions apply (which clusters and namespaces are visible).
-* **Role** — combines one Permission Set with one Access Scope into an assignable identity.
+* **Permission Set**: defines _what_ a user can do (read images, write policies, manage integrations, etc.).
+* **Access Scope**: defines _where_ those permissions apply (which clusters and namespaces are visible).
+* **Role**: combines one Permission Set with one Access Scope into an assignable identity.
 
 This makes it possible to run a single ACS Central for multiple teams without exposing data across tenant boundaries.
 
@@ -29,7 +29,7 @@ This makes it possible to run a single ACS Central for multiple teams without ex
 |Read-only access to all data (no policy changes)
 
 |Continuous Integration
-|Scoped for CI pipelines — `roxctl image check` / `deployment check`
+|Scoped for CI pipelines (`roxctl image check` / `deployment check`)
 
 |Sensor Creator
 |Can register new secured clusters
@@ -44,7 +44,7 @@ This makes it possible to run a single ACS Central for multiple teams without ex
 |Can create and manage vulnerability report configurations
 |===
 +
-NOTE: Your environment may also contain pre-configured demo roles (e.g. `demo-team-a-dev`). These were created as part of the Showroom setup — you can review them for reference.
+NOTE: Your environment may also contain pre-configured demo roles (e.g. `demo-team-a-dev`). These were created as part of the Showroom setup. You can review them for reference.
 
 . Click on *Analyst* and note the Permission Set and Access Scope it uses.
 
@@ -63,7 +63,7 @@ Create a scope that limits visibility to a single namespace on the `production` 
 ** Leave all other namespaces unchecked.
 . Click *Save*.
 
-NOTE: If the `payments` namespace does not exist in your environment, select any available application namespace. The goal is to demonstrate scoping — the specific namespace name does not matter.
+NOTE: If the `payments` namespace does not exist in your environment, select any available application namespace. The goal is to demonstrate scoping; the specific namespace name does not matter.
 
 == Task 3.3: Create a Permission Set
 
@@ -116,21 +116,21 @@ Combine the Permission Set and Access Scope into an assignable role.
 ** *Access scope:* `lab-payments-scope`
 . Click *Save*.
 
-== Task 3.5: Discussion — multi-tenant ACS
+== Task 3.5: Discussion: multi-tenant ACS
 
 Discuss with the group:
 
 * A user assigned the `lab-payments-vuln-reader` role logs in and navigates to *Vulnerability Management*. What do they see? +
   → Only images and deployments running in the `payments` namespace on the `production` cluster. All other namespaces are invisible.
 * The same user navigates to *Policy Management*. What happens? +
-  → The page is either empty or shows an access-denied message — the Permission Set grants no access to the Policy resource.
+  → The page is either empty or shows an access-denied message, since the Permission Set grants no access to the Policy resource.
 * How would you model three separate teams (Payments, Lending, Compliance) sharing one ACS Central? +
   → Create one Access Scope per team (scoped to their namespaces), one Permission Set per responsibility level (developer = read-only, team lead = vuln deferral), and combine them into team-specific Roles.
 
 == Key takeaways
 
 * Scoped Access Control is built from three primitives: Permission Sets, Access Scopes, and Roles.
-* Access Scopes control _visibility_ — what clusters and namespaces a user can see.
-* Permission Sets control _actions_ — what a user can do within their visible scope.
+* Access Scopes control _visibility_: what clusters and namespaces a user can see.
+* Permission Sets control _actions_: what a user can do within their visible scope.
 * Multiple teams can share a single ACS Central without seeing each other's data.
-* Start with no access and grant selectively — principle of least privilege.
+* Start with no access and grant selectively (principle of least privilege).

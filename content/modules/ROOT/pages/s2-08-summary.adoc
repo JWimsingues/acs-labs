@@ -3,9 +3,9 @@
 
 In this session you explored RHACS operational capabilities beyond the policy engine:
 
-* *Vulnerability Management* — navigated the dashboard, understood Scanner V4 architecture (Indexer/Matcher), scanned images on demand, and created automated PDF/CSV reports (Exercises 1–2).
-* *Scoped Access Control* — built Permission Sets, Access Scopes, and Roles to isolate tenant visibility inside a shared ACS Central (Exercise 3).
-* *Identity Integration* — connected Keycloak via OIDC, mapped group claims to ACS roles, and explored the OpenShift Console Plugin for developer self-service (Exercise 4).
-* *Notifiers & Integrations* — configured a generic webhook for external monitoring (OpenITCockpit pattern) and Splunk HEC for SIEM event correlation (Exercises 5–6).
+* *Vulnerability Management*: navigated the dashboard, understood Scanner V4 architecture (Indexer/Matcher), scanned images on demand, and created automated PDF/CSV reports (Exercises 1 and 2).
+* *Scoped Access Control*: built Permission Sets, Access Scopes, and Roles to isolate tenant visibility inside a shared ACS Central (Exercise 3).
+* *Identity Integration*: connected Keycloak via OIDC, mapped group claims to ACS roles, and explored the OpenShift Console Plugin for developer self-service (Exercise 4).
+* *Notifiers & Integrations*: configured a generic webhook for external monitoring (OpenITCockpit pattern) and Splunk HEC for SIEM event correlation (Exercises 5 and 6).
 
-These capabilities form the operational foundation for running RHACS at scale — multi-team visibility, automated reporting, and real-time alert routing to your existing toolchain.
+These capabilities form the operational foundation for running RHACS at scale: multi-team visibility, automated reporting, and real-time alert routing to your existing toolchain.

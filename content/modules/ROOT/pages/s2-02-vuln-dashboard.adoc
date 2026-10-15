@@ -8,23 +8,23 @@ The *Vulnerability Management* section aggregates those results so you can triag
 
 Under the hood, **Scanner V4** splits the work into two stages:
 
-* **Indexer** — generates a Software Bill of Materials (SBOM) by unpacking each image layer and cataloguing installed packages (RPM, APK, dpkg) and language-level dependencies (Java JARs, Go modules, Python wheels, Node packages).
-* **Matcher** — correlates that SBOM against vulnerability feeds (NVD, Red Hat OVAL/RHSA, Alpine SecDB, Debian Security Tracker) to produce the final CVE list.
+* **Indexer**: generates a Software Bill of Materials (SBOM) by unpacking each image layer and cataloguing installed packages (RPM, APK, dpkg) and language-level dependencies (Java JARs, Go modules, Python wheels, Node packages).
+* **Matcher**: correlates that SBOM against vulnerability feeds (NVD, Red Hat OVAL/RHSA, Alpine SecDB, Debian Security Tracker) to produce the final CVE list.
 
 This architecture means base OS vulnerabilities (RHEL, Alpine) and application-level vulnerabilities (Quarkus, Spring, npm) are evaluated through different feeds, so coverage and timing can differ.
 
 == Task 1.1: Explore Workload CVEs
 
 . In the RHACS Console, navigate to *Vulnerability Management* (left sidebar).
-. The default view is *Workload CVEs* — it shows every CVE found across all deployments in the cluster.
+. The default view is *Workload CVEs*, which shows every CVE found across all deployments in the cluster.
 . Use the filters at the top to narrow the view:
 ** *Severity:* select *Critical* to see only the highest-severity CVEs.
 ** *Fixable:* toggle to show only CVEs with an available fix.
 . Review the columns:
-** *CVE* — the CVE identifier (e.g. CVE-2024-xxxxx).
-** *Severity* and *CVSS score* — how critical the vulnerability is.
-** *Affected images* — how many images contain this CVE.
-** *First discovered* — when RHACS first detected it.
+** *CVE*: the CVE identifier (e.g. CVE-2024-xxxxx).
+** *Severity* and *CVSS score*: how critical the vulnerability is.
+** *Affected images*: how many images contain this CVE.
+** *First discovered*: when RHACS first detected it.
 . Click on a CVE to see which deployments and images are affected.
 
 == Task 1.2: Drill into an image
@@ -32,17 +32,17 @@ This architecture means base OS vulnerabilities (RHEL, Alpine) and application-l
 . Still in *Vulnerability Management*, click the *Images* tab (or navigate via the left sidebar to *Vulnerability Management* > *Workload CVEs* and switch to the image view).
 . Select an image that shows a high CVE count (look for images based on older base layers).
 . On the image detail page, review the CVE table:
-** *Fixable* — is a patched package version available?
-** *CVSS Score* — severity of each CVE.
-** *Component* — which package introduced the vulnerability.
-** *Source* — was it detected from the *OS* layer or from a *Language* manifest?
+** *Fixable*: is a patched package version available?
+** *CVSS Score*: severity of each CVE.
+** *Component*: which package introduced the vulnerability.
+** *Source*: was it detected from the *OS* layer or from a *Language* manifest?
 . Identify at least one CVE that comes from a base OS package (e.g. `glibc`, `openssl`) and one from a language-level dependency (e.g. a Java JAR or npm module).
 
 TIP: The *Source* column distinguishes *OS* (base layer) from *Language* (application dependency). If your image is a minimal distroless or UBI-micro base, most CVEs will come from language dependencies.
 
 == Task 1.3: Trigger an on-demand image scan
 
-You can scan any image on demand — even one not currently deployed in the cluster.
+You can scan any image on demand, even one not currently deployed in the cluster.
 
 . In the RHACS Console, navigate to *Vulnerability Management* > *Workload CVEs*.
 . Click *Manage watched images* (top right).
@@ -56,7 +56,7 @@ docker.io/library/nginx:1.21
 . Navigate back to *Workload CVEs* and filter by the image name to see the results.
 . Review the CVE breakdown and compare the CVE count and CVSS distribution to images already running in the cluster.
 
-NOTE: Watched images are scanned periodically until you remove them. This is useful for pre-deployment evaluation — scan a candidate image before promoting it to production.
+NOTE: Watched images are scanned periodically until you remove them. This is useful for pre-deployment evaluation: scan a candidate image before promoting it to production.
 
 == Task 1.4: Scanner V4 architecture walkthrough
 
@@ -73,5 +73,5 @@ Discuss with the group:
 
 * The *Workload CVEs* view provides a unified view of vulnerabilities across all deployments, images, and components.
 * Scanner V4 Indexer creates the SBOM; Matcher correlates it against CVE feeds.
-* Base OS and language-level vulnerabilities are evaluated through different feeds — coverage and timing differ.
+* Base OS and language-level vulnerabilities are evaluated through different feeds, so coverage and timing differ.
 * On-demand image scanning (watched images) lets you evaluate images before they reach the cluster.

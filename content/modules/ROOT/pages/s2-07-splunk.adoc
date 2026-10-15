@@ -5,8 +5,8 @@ Estimated time: 15 minutes.
 
 RHACS integrates with Splunk in two ways:
 
-* **RHACS Technology Add-on (TA-stackrox)** — a Splunk app that _pulls_ violations, vulnerability management data, and compliance results from the RHACS API on a schedule. This is already pre-installed in your environment.
-* **Native Splunk notifier** — a _push-based_ integration where RHACS sends alerts to Splunk via the HTTP Event Collector (HEC) whenever a policy is violated. You will configure this in this exercise.
+* **RHACS Technology Add-on (TA-stackrox)**: a Splunk app that _pulls_ violations, vulnerability management data, and compliance results from the RHACS API on a schedule. This is already pre-installed in your environment.
+* **Native Splunk notifier**: a _push-based_ integration where RHACS sends alerts to Splunk via the HTTP Event Collector (HEC) whenever a policy is violated. You will configure this in this exercise.
 
 == Task 6.1: Explore the Splunk console
 
@@ -37,7 +37,7 @@ index=* sourcetype="stackrox-violations"
 +
 . If data is present, review the fields: `alert_id`, `policy`, `deployment`, `namespace`, `severity`.
 
-NOTE: The add-on's modular inputs poll on a schedule (violations every 5 minutes, vulnerability management every 4 hours). If no data appears, the add-on may not have completed its first pull yet. Continue with the next task — the push-based HEC integration you configure below works independently.
+NOTE: The add-on's modular inputs poll on a schedule (violations every 5 minutes, vulnerability management every 4 hours). If no data appears, the add-on may not have completed its first pull yet. Continue with the next task. The push-based HEC integration you configure below works independently.
 
 == Task 6.3: Configure the RHACS native Splunk notifier
 
@@ -115,7 +115,7 @@ index=* sourcetype="stackrox-alert"
 ----
 +
 . You should see events pushed by the RHACS native notifier.
-. Click an event and review the JSON payload — it contains the full policy details, deployment metadata, and violation context.
+. Click an event and review the JSON payload. It contains the full policy details, deployment metadata, and violation context.
 . If the add-on also has data, compare the two sourcetypes:
 +
 [cols="1,1,1",options="header"]
@@ -144,6 +144,6 @@ oc delete namespace splunk-test
 
 * RHACS offers two Splunk integration paths: a pull-based add-on (TA-stackrox) and a push-based native notifier (HEC).
 * The add-on pulls violations, vulnerability management data, and compliance results on a schedule.
-* The native notifier pushes alerts in real time — useful for SOC workflows that need immediate notification.
+* The native notifier pushes alerts in real time, making it useful for SOC workflows that need immediate notification.
 * Both can run simultaneously and produce different sourcetypes for distinct Splunk dashboards.
 * The HEC URL can be an internal cluster service when ACS and Splunk share a cluster, or an external endpoint in production.

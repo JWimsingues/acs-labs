@@ -30,7 +30,7 @@ ssh lab-user@ssh.ocpv02.rhdp.net -p 30906
 == Verify RHACS CLI access
 
 `ROX_CENTRAL_ADDRESS` and `ROX_API_TOKEN` are already set on the bastion.
-`roxctl` reads the token from the environment — do not pass `--token`.
+`roxctl` reads the token from the environment. Do not pass `--token`.
 
 . Verify the environment variables and CLI access:
 +

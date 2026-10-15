@@ -36,7 +36,7 @@ Before configuring ACS, you need a Keycloak realm with a client and a test group
 ** Click *Save*.
 . Copy the client secret:
 ** On the client detail page, select the *Credentials* tab.
-** Copy the *Client secret* value — you will need it in Task 4.3.
+** Copy the *Client secret* value. You will need it in Task 4.3.
 . Add a groups protocol mapper so the `groups` claim appears in the OIDC token:
 ** Navigate to *Clients* > *acs-central* > *Client scopes* tab.
 ** Click the scope named *acs-central-dedicated*.
@@ -110,16 +110,16 @@ The RHACS Console Plugin is already enabled on this cluster. It adds vulnerabili
 . Open the *OpenShift Console*: https://console-openshift-console.apps.cluster-sz6zn.dyn.redhatworkshops.io
 . Log in as `admin` / `CyIDoW06RdLv`.
 . Navigate to *Home* > *Overview*.
-. Notice the *ACS* section in the status card — it shows a cluster-wide vulnerability summary.
+. Notice the *ACS* section in the status card, which shows a cluster-wide vulnerability summary.
 . Navigate to *Workloads* > *Deployments*.
 . Select any deployment and scroll down.
-. Look for the *Vulnerabilities* tab — this shows CVE data from RHACS for that specific workload, without leaving the OpenShift Console.
+. Look for the *Vulnerabilities* tab. This shows CVE data from RHACS for that specific workload, without leaving the OpenShift Console.
 
 TIP: The Console Plugin is especially useful for developers who operate in the OpenShift Console daily. They can check their workload's vulnerability posture without needing a separate ACS login or different RBAC configuration.
 
 == Key takeaways
 
 * OIDC auth providers let you map external identity groups (Keycloak, Azure AD, Okta) directly to ACS roles.
-* Combined with SAC (Exercise 3), OIDC group mapping automates tenant isolation — no manual role assignment per user.
+* Combined with SAC (Exercise 3), OIDC group mapping automates tenant isolation. No manual role assignment is needed per user.
 * The OpenShift Console Plugin embeds vulnerability data into the developer's native workflow.
 * Both mechanisms reduce the friction for development teams to engage with security data.
