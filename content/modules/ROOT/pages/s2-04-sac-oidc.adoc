@@ -1,6 +1,8 @@
 = Exercise 3: Scoped Access Control and OIDC mapping
 :navtitle: Exercise 3: SAC and OIDC
 
+include::partial$session2-ui.adoc[]
+
 Estimated time: 20 minutes.
 
 RHACS *Scoped Access Control* (SAC) controls what each user can see and do inside a shared ACS Central.
@@ -149,3 +151,14 @@ TIP: Optional stretch: in the OpenShift Console, open a Deployment and look for 
 * SAC isolates tenants inside one ACS Central using Permission Sets, Access Scopes, and Roles.
 * OIDC group mapping assigns those roles automatically from identity group claims.
 * A scoped login is the proof that multi-tenant ACS works without a separate Central per team.
+
+[.verification]
+****
+After logging in as `payments-dev` via Keycloak, do you only see the `payments` namespace and lack access to create auth providers or change broad Access Control settings?
+
+[.success]
+Tenant isolation works: the OIDC group mapped to `lab-payments-vuln-reader` limits what the user can see and do. Continue to Exercise 4.
+
+[.fail]
+Confirm the auth provider rule maps group `ctie-payments-devs` to role `lab-payments-vuln-reader`, that the Access Scope selects only `payments` on cluster `production`, and that the Keycloak user has Email verified On with no required actions. Then retry in a private window.
+****

@@ -1,6 +1,8 @@
 = Exercise 6: Splunk integration
 :navtitle: Exercise 6: Splunk integration
 
+include::partial$session2-ui.adoc[]
+
 Estimated time: 15 minutes.
 
 RHACS integrates with Splunk in two ways on this Showroom:
@@ -124,3 +126,14 @@ oc delete pod splunk-trigger -n frontend --ignore-not-found
 * Pull (add-on) and push (HEC) can run together with different sourcetypes.
 * HEC is the real-time path for SOC-style alerting.
 * Always pick an *enabled* policy when you design a trigger step for students.
+
+[.verification]
+****
+After triggering the Alpine workload, does Splunk Search return an event for `index=* sourcetype="stackrox-alert"` with policy and deployment metadata?
+
+[.success]
+The HEC push path is working. You can correlate ACS policy breaches in Splunk in near real time. Continue to the lab summary.
+
+[.fail]
+Confirm the Splunk notifier Test succeeds, that it is attached to the enabled *Alpine Linux Package Manager (apk) in Image* policy, wait 30 to 60 seconds after creating `splunk-trigger`, then rerun the `stackrox-alert` search.
+****

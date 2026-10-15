@@ -1,6 +1,8 @@
 = Prerequisites and environment verification
 :navtitle: Prerequisites
 
+include::partial$session2-ui.adoc[]
+
 Estimated time: 5 minutes.
 
 == Web consoles

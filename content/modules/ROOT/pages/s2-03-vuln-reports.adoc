@@ -1,6 +1,8 @@
 = Exercise 2: Automated vulnerability reports
 :navtitle: Exercise 2: Automated vulnerability reports
 
+include::partial$session2-ui.adoc[]
+
 Estimated time: 15 minutes.
 
 RHACS can generate scheduled or on-demand vulnerability reports in PDF and CSV format.
@@ -64,3 +66,14 @@ TIP: CSV output is useful for ticketing or SIEM import. Report configurations ar
 * On-demand download proves report content without SMTP.
 * Scheduled reports need an email notifier. Configure that before enabling Weekly or Daily delivery.
 * Scope by cluster, namespace, or collection so each tenant gets only their data.
+
+[.verification]
+****
+Did you download the `Lab - Payments Vulnerability Report` PDF or CSV and confirm it includes CVE, image, and deployment detail for the scoped payments collection?
+
+[.success]
+You can produce a tenant-scoped on-demand report without SMTP. Continue to Exercise 3.
+
+[.fail]
+Open *Vulnerability Management* > *Reports*, generate the report with the download option (leave Schedule empty), then open the file and look for CVE, image, and deployment columns.
+****

@@ -1,6 +1,8 @@
 = Exercise 1: Vulnerability dashboard and Scanner V4
 :navtitle: Exercise 1: Vulnerability dashboard and Scanner V4
 
+include::partial$session2-ui.adoc[]
+
 Estimated time: 15 minutes.
 
 RHACS continuously scans every image running in your clusters.
@@ -67,3 +69,14 @@ Discuss:
 * Scanner V4 Indexer builds the SBOM. Matcher produces the CVE list.
 * *Source* separates OS packages from language dependencies.
 * Watched images let you evaluate candidates before they run in the cluster.
+
+[.verification]
+****
+Can you open a demo image (for example juice-shop) and identify at least one *OS* Source CVE and one *Language* Source CVE?
+
+[.success]
+You can triage with Scanner V4 results and separate base OS findings from language-level dependencies. Continue to Exercise 2.
+
+[.fail]
+Return to *Vulnerability Management* > *Results*, switch the entity to *Image*, open a high-count demo image, and check the *Source* column (*OS* vs *Language*).
+****

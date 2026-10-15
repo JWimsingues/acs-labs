@@ -1,6 +1,8 @@
 = Exercise 5: Webhook notifier
 :navtitle: Exercise 5: Webhook notifier
 
+include::partial$session2-ui.adoc[]
+
 Estimated time: 15 minutes.
 
 RHACS can push policy violation alerts to external systems using *notifiers*.
@@ -94,3 +96,14 @@ oc delete pod webhook-trigger -n backend --ignore-not-found
 * Generic Webhooks are the flexible bridge into existing monitoring stacks.
 * The ACS JSON payload includes policy, deployment, and violation context.
 * webhook.site is for labs. Production uses middleware in front of OpenITCockpit or similar.
+
+[.verification]
+****
+Did webhook.site receive a POST whose JSON includes policy `Latest tag`, deployment `webhook-trigger`, and namespace `backend`?
+
+[.success]
+The generic webhook path works and the ACS payload has the fields needed for an OpenITCockpit-style mapping. Continue to Exercise 6.
+
+[.fail]
+Confirm the notifier is attached to the enabled *Latest tag* policy, that the Test button already reached webhook.site, then recreate the `webhook-trigger` pod in `backend` and refresh the webhook.site request list.
+****

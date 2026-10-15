@@ -1,6 +1,8 @@
 = Exercise 4: Risk profiling and CVE deferral
 :navtitle: Exercise 4: Risk and CVE deferral
 
+include::partial$session2-ui.adoc[]
+
 Estimated time: 15 minutes.
 
 ACS computes a *Risk Priority* for each deployment from policy violations, vulnerabilities, configuration, and related signals.
@@ -62,3 +64,14 @@ If the request fails or never creates a record, continue with the existing Appro
 * Risk priority aggregates multiple signals so teams do not triage from a flat CVE list alone.
 * Policy scope exclusions keep production gates strict while reducing noise from sandboxes.
 * Approved deferral and false-positive exceptions are the auditable SST or DSI record when a CVE is not fixed immediately.
+
+[.verification]
+****
+Did you open a high-priority deployment on *Risk* (for example `juice-shop`) and review an existing *Approved* vulnerability exception (Deferred or False positive) with its scope and status?
+
+[.success]
+You can use Risk priority for triage and treat Approved exceptions as the auditable SST or DSI record. Continue to Exercise 5.
+
+[.fail]
+Open *Risk*, select `juice-shop` (or another high-priority workload), then under *Vulnerability Management* find *Exception configuration* / *Vulnerability exceptions* and open an Approved Deferred or False positive record.
+****
